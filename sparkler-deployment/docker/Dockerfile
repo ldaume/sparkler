@@ -17,7 +17,7 @@
 #
 # Pull base image.
 
-FROM ubuntu
+FROM sparkler-parent
 
 RUN apt-get update && \
     apt-get install -y software-properties-common wget git
@@ -39,10 +39,6 @@ RUN apt-get update && apt-get install -y git maven emacs-nox
 
 # Define working directory.
 WORKDIR /data
-
-# Copies sparkler
-# ADD ./ /data/sparkler
-RUN git clone https://github.com/USCDataScience/sparkler /data/sparkler
 
 # Setup Solr
 RUN wget http://archive.apache.org/dist/lucene/solr/6.6.0/solr-6.6.0.tgz -O /data/solr.tgz && \

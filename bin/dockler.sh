@@ -59,38 +59,22 @@ build_image(){
 ####################
 image_id=`docker images -q "$docker_tag" | head -1`
 if [[ -z "${image_id// }" ]]; then
-    while true; do
-        read -p "Cant find docker image $docker_tag. Do you wish to build docker image? [Y/N]" yn
-        case $yn in
-            [Yy]* ) build_image;
+    build_image;
                     image_id=`docker images -q "$docker_tag" | head -1`
-                    break;;
-            [Nn]* ) exit;;
-            * ) echo "Please answer yes or no.";;
-        esac
-    done
 fi
 echo "Found image: $image_id"
 ####################
 
 container_id=`docker ps -q --filter="ancestor=$image_id"`
 if [[ -z "${container_id// }" ]]; then
-    while true; do
-        read -p "No container is running for $image_id. Do you wish to start it? [Y/N]" yn
-        case $yn in
-            [Yy]* ) echo "Staring container"
-                    container_id=`docker run -p "$solr_port":8983 -p "$spark_ui_port:4040" -it -d $image_id`
+    echo "Staring container"
+                    container_id=`docker run --name sparkler-local -p "$solr_port":8983 -p "$spark_ui_port:4040" -it -d $image_id`
                     if [ $? -ne 0 ]; then
                         echo "Something went wrong :-( Please check error messages from docker."
                         exit 3
                      fi
                     echo "Starting solr server inside the container"
                     docker exec "$container_id" /data/solr/bin/solr restart -force
-                    break;;
-            [Nn]* ) exit;;
-            * ) echo "Please answer yes or no.";;
-        esac
-    done
 fi
 ####################
 
